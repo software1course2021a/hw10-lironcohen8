@@ -12,8 +12,11 @@ public class C extends B {
 
 	@Override
 	public int compareTo(A other) {
-		//Put your code here
-		return 0;
+		int compareJ = ((Integer)this.j).compareTo((Integer)other.j);
+		if (compareJ != 0)
+			return compareJ;
+		else
+			return ((Integer)this.i).compareTo((Integer)other.i);
 	}
 
 
