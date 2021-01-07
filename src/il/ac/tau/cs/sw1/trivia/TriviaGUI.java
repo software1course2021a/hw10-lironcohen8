@@ -39,6 +39,10 @@ public class TriviaGUI {
 	private Label startupMessageLabel;
 	private Font boldFont;
 	private String lastAnswer;
+	private int questionsAsked;
+	private int wrongAnswers;
+	private Question curQuestion;
+	private int curScores;
 	
 	// Currently visible UI elements.
 	Label instructionLabel;
@@ -111,9 +115,7 @@ public class TriviaGUI {
 	
 		// "Play!" listener
 		playButton.addListener(SWT.Selection, new Listener() {
-		    private int questionsAsked;
-
-			public void handleEvent(Event e) {
+		   	public void handleEvent(Event e) {
 		        if (e.type == SWT.Selection) {
 		        	List<Question> qArr = new ArrayList<Question>();
 		        	File file = new File(filePathField.getText());
@@ -134,19 +136,20 @@ public class TriviaGUI {
 		        	catch (IOException e1) { // won't happen
 						return;
 					}
-		        	
-		        	this.questionsAsked = 0;
-		        	scoreLabel.setText("0");
+		        	lastAnswer = "";
+		        	questionsAsked = 0;
+		        	curScores = 0;
+		        	scoreLabel.setText(String.valueOf(curScores));
 		        	Random rand = new Random();
 		        	int qNum = rand.nextInt(qArr.size());
 		        	while (qArr.get(qNum).wasAsked) {
 		        		qNum = rand.nextInt();
 		        	}
 		        	Question curQ = qArr.get(qNum);
-		        	Collections.shuffle(curQ.answers);
 		        	curQ.wasAsked = true;
-		        	updateQuestionPanel(curQ.question, curQ.answers);
-		        	this.questionsAsked++;
+		        	curQuestion = curQ;
+		        	updateQuestionPanel(curQ.question, curQ.shuffledAnswers);
+		        	questionsAsked++;
 		        }
 		      }
 		});
@@ -221,6 +224,25 @@ public class TriviaGUI {
 			
 			answerButtons.add(answerButton);
 		}
+		
+		// answers listener
+		
+		for (Button b : answerButtons) {
+			b.addListener(SWT.Selection, new Listener() {
+			   	public void handleEvent(Event e) {
+			        if (e.type == SWT.Selection) {
+				String rightAns = curQuestion.answers.get(0);
+				if (b.getText().equals(rightAns)) 
+					curScores += 3;
+				else {
+					curScores -= 2;
+					wrongAnswers += 1;
+					}
+				scoreLabel.setText(String.valueOf(curScores));
+				}
+			   	}
+			});
+		}
 
 		// create the "Pass" button to skip a question
 		passButton = new Button(questionPanel, SWT.PUSH);
@@ -261,11 +283,15 @@ public class TriviaGUI {
 		private boolean wasAsked;
 		private String question;
 		private List<String> answers = new ArrayList<String>();
+		private List<String> shuffledAnswers = new ArrayList<String>();
 		
 		public Question(String[] arr) {
 			this.question = arr[0];
-			for (int i=0; i<4; i++)
+			for (int i=0; i<4; i++) {
 				this.answers.add(arr[i+1]);
+				this.shuffledAnswers.add(arr[i+1]);
+			}
+			Collections.shuffle(this.shuffledAnswers);
 		}
 	}
 	
