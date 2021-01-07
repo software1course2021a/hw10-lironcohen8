@@ -111,7 +111,7 @@ public class TriviaGUI {
 	
 		// "Play!" listener
 		playButton.addListener(SWT.Selection, new Listener() {
-		      private int questionsAsked;
+		    private int questionsAsked;
 
 			public void handleEvent(Event e) {
 		        if (e.type == SWT.Selection) {
@@ -124,7 +124,9 @@ public class TriviaGUI {
 						while (line != null) {
 							String[] splittedLine = line.split("\t");
 							qArr.add(new Question(splittedLine));
+							line = br.readLine();
 						}
+						br.close();
 					}
 		        	catch (FileNotFoundException e1) { // won't happen
 						return;
@@ -132,10 +134,11 @@ public class TriviaGUI {
 		        	catch (IOException e1) { // won't happen
 						return;
 					}
+		        	
 		        	this.questionsAsked = 0;
 		        	scoreLabel.setText("0");
-		        	Random rand = new Random(qArr.size());
-		        	int qNum = rand.nextInt();
+		        	Random rand = new Random();
+		        	int qNum = rand.nextInt(qArr.size());
 		        	while (qArr.get(qNum).wasAsked) {
 		        		qNum = rand.nextInt();
 		        	}
