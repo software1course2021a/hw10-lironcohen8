@@ -40,6 +40,7 @@ public class TriviaGUI {
 	private Font boldFont;
 	private String lastAnswer;
 	private int questionsAsked;
+	private List<Question> qArr = new ArrayList<Question>();
 	private int wrongAnswers;
 	private Question curQuestion;
 	private int curScores;
@@ -117,7 +118,6 @@ public class TriviaGUI {
 		playButton.addListener(SWT.Selection, new Listener() {
 		   	public void handleEvent(Event e) {
 		        if (e.type == SWT.Selection) {
-		        	List<Question> qArr = new ArrayList<Question>();
 		        	File file = new File(filePathField.getText());
 		        	try {
 						FileReader fr = new FileReader(file);
@@ -139,21 +139,25 @@ public class TriviaGUI {
 		        	lastAnswer = "";
 		        	questionsAsked = 0;
 		        	curScores = 0;
-		        	scoreLabel.setText(String.valueOf(curScores));
-		        	Random rand = new Random();
-		        	int qNum = rand.nextInt(qArr.size());
-		        	while (qArr.get(qNum).wasAsked) {
-		        		qNum = rand.nextInt();
+		        	scoreLabel.setText("0");
+		        	updateRandomQuestion();
 		        	}
-		        	Question curQ = qArr.get(qNum);
-		        	curQ.wasAsked = true;
-		        	curQuestion = curQ;
-		        	updateQuestionPanel(curQ.question, curQ.shuffledAnswers);
-		        	questionsAsked++;
-		        }
 		      }
 		});
 	
+	}
+	
+	private void updateRandomQuestion() {
+		Random rand = new Random();
+    	int qNum = rand.nextInt(qArr.size());
+    	while (qArr.get(qNum).wasAsked) {
+    		qNum = rand.nextInt();
+    	}
+    	Question curQ = qArr.get(qNum);
+    	curQ.wasAsked = true;
+    	curQuestion = curQ;
+    	updateQuestionPanel(curQ.question, curQ.shuffledAnswers);
+    	questionsAsked++;
 	}
 
 	/**
@@ -232,13 +236,20 @@ public class TriviaGUI {
 			   	public void handleEvent(Event e) {
 			        if (e.type == SWT.Selection) {
 				String rightAns = curQuestion.answers.get(0);
-				if (b.getText().equals(rightAns)) 
+				if (b.getText().equals(rightAns)) {
 					curScores += 3;
+					wrongAnswers = 0;
+				}
 				else {
 					curScores -= 2;
 					wrongAnswers += 1;
+					if (wrongAnswers == 3)
+						GUIUtils.showInfoDialog(shell, "GAME OVER", "Your final score is " + curScores + " after " + questionsAsked + " questions.");
 					}
 				scoreLabel.setText(String.valueOf(curScores));
+				updateRandomQuestion();
+				if (questionsAsked == qArr.size())
+					GUIUtils.showInfoDialog(shell, "YOU WON", "Your final score is " + curScores + " after " + questionsAsked + " questions.");
 				}
 			   	}
 			});
