@@ -19,7 +19,9 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
@@ -88,6 +90,13 @@ public class TriviaGUI {
 		// "Browse" button
 		final Button browseButton = new Button(fileSelection, SWT.PUSH);
 		browseButton.setText("Browse");
+		browseButton.addListener(SWT.Selection, new Listener() {
+		      public void handleEvent(Event e) {
+		        if (e.type == SWT.Selection) {
+		        	filePathField.setText(GUIUtils.getFilePathFromFileDialog(shell));
+		        }
+		      }
+		});
 
 		// "Play!" button
 		final Button playButton = new Button(fileSelection, SWT.PUSH);
@@ -197,4 +206,5 @@ public class TriviaGUI {
 		display.dispose();
 		boldFont.dispose();
 	}
+	
 }
