@@ -151,12 +151,11 @@ public class TriviaGUI {
 		Random rand = new Random();
     	int qNum = rand.nextInt(qArr.size());
     	while (qArr.get(qNum).wasAsked) {
-    		qNum = rand.nextInt();
+    		qNum = rand.nextInt(qNum);
     	}
-    	Question curQ = qArr.get(qNum);
-    	curQ.wasAsked = true;
-    	curQuestion = curQ;
-    	updateQuestionPanel(curQ.question, curQ.shuffledAnswers);
+    	curQuestion = qArr.get(qNum);
+    	curQuestion.wasAsked = true;
+    	updateQuestionPanel(curQuestion.question, curQuestion.shuffledAnswers);
     	questionsAsked++;
 	}
 
@@ -243,13 +242,16 @@ public class TriviaGUI {
 				else {
 					curScores -= 2;
 					wrongAnswers += 1;
-					if (wrongAnswers == 3)
-						GUIUtils.showInfoDialog(shell, "GAME OVER", "Your final score is " + curScores + " after " + questionsAsked + " questions.");
-					}
+				}
+				
 				scoreLabel.setText(String.valueOf(curScores));
-				updateRandomQuestion();
 				if (questionsAsked == qArr.size())
 					GUIUtils.showInfoDialog(shell, "YOU WON", "Your final score is " + curScores + " after " + questionsAsked + " questions.");
+				else if (wrongAnswers == 3)
+					GUIUtils.showInfoDialog(shell, "GAME OVER", "Your final score is " + curScores + " after " + questionsAsked + " questions.");
+				else
+					updateRandomQuestion();
+				
 				}
 			   	}
 			});
