@@ -1,10 +1,15 @@
 package il.ac.tau.cs.sw1.trivia;
 
+import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Random;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -90,6 +95,8 @@ public class TriviaGUI {
 		// "Browse" button
 		final Button browseButton = new Button(fileSelection, SWT.PUSH);
 		browseButton.setText("Browse");
+		
+		// "Browse" listener
 		browseButton.addListener(SWT.Selection, new Listener() {
 		      public void handleEvent(Event e) {
 		        if (e.type == SWT.Selection) {
@@ -101,6 +108,46 @@ public class TriviaGUI {
 		// "Play!" button
 		final Button playButton = new Button(fileSelection, SWT.PUSH);
 		playButton.setText("Play!");
+	
+		// "Play!" listener
+		playButton.addListener(SWT.Selection, new Listener() {
+		      private int questionsAsked;
+
+			public void handleEvent(Event e) {
+		        if (e.type == SWT.Selection) {
+		        	List<Question> qArr = new ArrayList<Question>();
+		        	File file = new File(filePathField.getText());
+		        	try {
+						FileReader fr = new FileReader(file);
+						BufferedReader br = new BufferedReader(fr);
+						String line = br.readLine();
+						while (line != null) {
+							String[] splittedLine = line.split("\t");
+							qArr.add(new Question(splittedLine));
+						}
+					}
+		        	catch (FileNotFoundException e1) { // won't happen
+						return;
+					}
+		        	catch (IOException e1) { // won't happen
+						return;
+					}
+		        	this.questionsAsked = 0;
+		        	scoreLabel.setText("0");
+		        	Random rand = new Random(qArr.size());
+		        	int qNum = rand.nextInt();
+		        	while (qArr.get(qNum).wasAsked) {
+		        		qNum = rand.nextInt();
+		        	}
+		        	Question curQ = qArr.get(qNum);
+		        	Collections.shuffle(curQ.answers);
+		        	curQ.wasAsked = true;
+		        	updateQuestionPanel(curQ.question, curQ.answers);
+		        	this.questionsAsked++;
+		        }
+		      }
+		});
+	
 	}
 
 	/**
@@ -205,6 +252,18 @@ public class TriviaGUI {
 		}
 		display.dispose();
 		boldFont.dispose();
+	}
+	
+	private class Question {
+		private boolean wasAsked;
+		private String question;
+		private List<String> answers = new ArrayList<String>();
+		
+		public Question(String[] arr) {
+			this.question = arr[0];
+			for (int i=0; i<4; i++)
+				this.answers.add(arr[i+1]);
+		}
 	}
 	
 }
