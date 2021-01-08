@@ -1,7 +1,5 @@
 package enumRiddles;
 
-import java.util.Arrays;
-
 enum TLight {
 	   // Each instance provides its implementation to abstract method
 	   RED(30,1),
