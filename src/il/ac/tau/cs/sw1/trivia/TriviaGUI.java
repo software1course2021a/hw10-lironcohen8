@@ -47,6 +47,7 @@ public class TriviaGUI {
 	private int curScores = 0;
 	private boolean isAnswersAvaliable = true;
 	private boolean isPassAvaliable = true;
+	
 	private boolean isFiftyFiftyAvaliable = true;
 	
 	// Currently visible UI elements.
@@ -260,7 +261,7 @@ public class TriviaGUI {
 								GUIUtils.showInfoDialog(shell, "YOU WON", "Your final score is " + curScores + " after " + questionsAnswered + " questions.");
 								isAnswersAvaliable = false;
 							}
-							else if (wrongAnswers == 3) {
+							else if (wrongAnswers == MAX_ERRORS) {
 								GUIUtils.showInfoDialog(shell, "GAME OVER", "Your final score is " + curScores + " after " + questionsAnswered + " questions.");
 								isAnswersAvaliable = false;
 							}
