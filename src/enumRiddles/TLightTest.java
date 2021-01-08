@@ -1,21 +1,29 @@
 package enumRiddles;
 
+import java.util.Arrays;
+
 enum TLight {
 	   // Each instance provides its implementation to abstract method
-	   RED(30),
-	   AMBER(10),
-	   GREEN(30);
+	   RED(30,1),
+	   AMBER(10,2),
+	   GREEN(30,3);
 	 
 	   
 	   private final int seconds;     // Private variable
+	   private final int order;
 	 
-	   TLight(int seconds) {          // Constructor
+	   TLight(int seconds, int order) {          // Constructor
 	      this.seconds = seconds;
+	      this.order = order;
 	   }
 	 
 	   int getSeconds() {             // Getter
 	      return seconds;
-	   }  
+	   }
+	   
+	   TLight next() {
+		   return TLight.values()[(this.order+1)%TLight.values().length];
+	   }
 	}
 	   
 	public class TLightTest {
