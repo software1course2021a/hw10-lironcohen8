@@ -1,18 +1,26 @@
 package enumRiddles;
 
 enum Day {
-	   MONDAY,
-	   TUESDAY,
-	   WEDNESDAY,
-	   THURSDAY,
-	   FRIDAY,
-	   SATURDAY,
-	   SUNDAY;
+	   MONDAY(1),
+	   TUESDAY(2),
+	   WEDNESDAY(3),
+	   THURSDAY(4),
+	   FRIDAY(5),
+	   SATURDAY(6),
+	   SUNDAY(7);
+	
+	private final int num;
+	
+	private Day(int n) {
+		this.num = n;
+	}
 	 
-	   public Day next(){return MONDAY;}
+	   public Day next(){
+		   return Day.values()[this.num%Day.values().length];
+		   }
 	 
 	   int getDayNumber() {
-	      return 1;
+	      return this.num;
 	   }
 	}
 	   
