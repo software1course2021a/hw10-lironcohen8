@@ -40,10 +40,14 @@ public class TriviaGUI {
 	private Font boldFont;
 	private String lastAnswer;
 	private int questionsAsked;
+	private int questionsAnswered;
 	private List<Question> qArr = new ArrayList<Question>();
 	private int wrongAnswers;
 	private Question curQuestion;
-	private int curScores;
+	private int curScores = 0;
+	private boolean isAnswersAvaliable = true;
+	private boolean isPassAvaliable = true;
+	private boolean isFiftyFiftyAvaliable = true;
 	
 	// Currently visible UI elements.
 	Label instructionLabel;
@@ -138,16 +142,21 @@ public class TriviaGUI {
 					}
 		        	lastAnswer = "";
 		        	questionsAsked = 0;
+		        	questionsAnswered = 0;
+		        	wrongAnswers = 0;
 		        	curScores = 0;
 		        	scoreLabel.setText("0");
-		        	updateRandomQuestion();
-		        	}
+		        	isAnswersAvaliable = true;
+		        	isPassAvaliable = true;
+		        	isFiftyFiftyAvaliable = true;
+		        	updateRandomQuestion("Play");		        	
+		        }
 		      }
 		});
 	
 	}
 	
-	private void updateRandomQuestion() {
+	private void updateRandomQuestion(String instruction) {
 		Random rand = new Random();
     	int qNum = rand.nextInt(qArr.size());
     	while (qArr.get(qNum).wasAsked) {
@@ -157,6 +166,8 @@ public class TriviaGUI {
     	curQuestion.wasAsked = true;
     	updateQuestionPanel(curQuestion.question, curQuestion.shuffledAnswers);
     	questionsAsked++;
+    	if (!instruction.equals("Pass"))
+    		questionsAnswered++;
 	}
 
 	/**
@@ -229,32 +240,36 @@ public class TriviaGUI {
 		}
 		
 		// answers listener
-		
-		for (Button b : answerButtons) {
-			b.addListener(SWT.Selection, new Listener() {
-			   	public void handleEvent(Event e) {
-			        if (e.type == SWT.Selection) {
-				String rightAns = curQuestion.answers.get(0);
-				if (b.getText().equals(rightAns)) {
-					curScores += 3;
-					wrongAnswers = 0;
-				}
-				else {
-					curScores -= 2;
-					wrongAnswers += 1;
-				}
-				
-				scoreLabel.setText(String.valueOf(curScores));
-				if (questionsAsked == qArr.size())
-					GUIUtils.showInfoDialog(shell, "YOU WON", "Your final score is " + curScores + " after " + questionsAsked + " questions.");
-				else if (wrongAnswers == 3)
-					GUIUtils.showInfoDialog(shell, "GAME OVER", "Your final score is " + curScores + " after " + questionsAsked + " questions.");
-				else
-					updateRandomQuestion();
-				
-				}
-			   	}
-			});
+		if (isAnswersAvaliable) { //###############################################
+			for (Button b : answerButtons) {
+				b.addListener(SWT.Selection, new Listener() {
+				   	public void handleEvent(Event e) {
+				        if (e.type == SWT.Selection) {
+							String rightAns = curQuestion.answers.get(0);
+							if (b.getText().equals(rightAns)) {
+								curScores += 3;
+								wrongAnswers = 0;
+							}
+							else {
+								curScores -= 2;
+								wrongAnswers += 1;
+							}
+							
+							scoreLabel.setText(String.valueOf(curScores));
+							if (questionsAsked == qArr.size()) {
+								GUIUtils.showInfoDialog(shell, "YOU WON", "Your final score is " + curScores + " after " + questionsAnswered + " questions.");
+								isAnswersAvaliable = false;
+							}
+							else if (wrongAnswers == 3) {
+								GUIUtils.showInfoDialog(shell, "GAME OVER", "Your final score is " + curScores + " after " + questionsAnswered + " questions.");
+								isAnswersAvaliable = false;
+							}
+							else
+								updateRandomQuestion("Answer");
+							}
+					   	}
+				});
+			}
 		}
 
 		// create the "Pass" button to skip a question
@@ -264,6 +279,16 @@ public class TriviaGUI {
 				false);
 		data.horizontalSpan = 1;
 		passButton.setLayoutData(data);
+		
+		// Pass Listener
+		passButton.addListener(SWT.Selection, new Listener() {
+		      public void handleEvent(Event e) {
+		        if (e.type == SWT.Selection) {
+		        	updateRandomQuestion("Pass");
+		        }
+		      }
+		});
+
 		
 		// create the "50-50" button to show fewer answer options
 		fiftyFiftyButton = new Button(questionPanel, SWT.PUSH);
