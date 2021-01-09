@@ -266,13 +266,13 @@ public class TriviaGUI {
 				false);
 		data.horizontalSpan = 1;
 		passButton.setLayoutData(data);
+		if (curScores <= 0 && passUsedFirst)
+    		passButton.setEnabled(false);
 		
 		// Pass Listener
 		passButton.addListener(SWT.Selection, new Listener() {
-		      public void handleEvent(Event e) {
-		    	if (curScores <= 0 && passUsedFirst)
-			    	passButton.setEnabled(false);  
-		    	else if (e.type == SWT.Selection) {
+		      public void handleEvent(Event e) {  
+		    	if (e.type == SWT.Selection) {
 		        	if (!passUsedFirst)
 		        		passUsedFirst = true;
 		        	else {
@@ -292,14 +292,14 @@ public class TriviaGUI {
 				false);
 		data.horizontalSpan = 1;
 		fiftyFiftyButton.setLayoutData(data);
-
+		if (curScores <= 0 && fiftyFiftyUsedFirst)
+    		fiftyFiftyButton.setEnabled(false);
+		
 		// 50-50 Listener
 		Random rand = new Random();
 		fiftyFiftyButton.addListener(SWT.Selection, new Listener() {
 		      public void handleEvent(Event e) {
-		    	if (curScores <= 0 && fiftyFiftyUsedFirst)
-		    		fiftyFiftyButton.setEnabled(false);
-		    	else if (e.type == SWT.Selection) {
+		    	if (e.type == SWT.Selection) {
 		        	if (!fiftyFiftyUsedFirst)
 		        		fiftyFiftyUsedFirst = true;
 		        	else {
