@@ -270,7 +270,9 @@ public class TriviaGUI {
 		// Pass Listener
 		passButton.addListener(SWT.Selection, new Listener() {
 		      public void handleEvent(Event e) {
-		        if (e.type == SWT.Selection && curScores > 0) {
+		    	if (curScores <= 0)
+			    	passButton.setEnabled(false);  
+		    	else if (e.type == SWT.Selection) {
 		        	if (!passUsedFirst)
 		        		passUsedFirst = true;
 		        	else {
@@ -295,7 +297,9 @@ public class TriviaGUI {
 		Random rand = new Random();
 		fiftyFiftyButton.addListener(SWT.Selection, new Listener() {
 		      public void handleEvent(Event e) {
-		        if (e.type == SWT.Selection && curScores > 0) {
+		    	if (curScores <= 0)
+		    		fiftyFiftyButton.setEnabled(false);
+		    	else if (e.type == SWT.Selection) {
 		        	if (!fiftyFiftyUsedFirst)
 		        		fiftyFiftyUsedFirst = true;
 		        	else {
