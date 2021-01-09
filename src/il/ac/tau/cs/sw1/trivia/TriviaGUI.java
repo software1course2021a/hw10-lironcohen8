@@ -155,7 +155,6 @@ public class TriviaGUI {
 	}
 	
 	private void updateRandomQuestion(String instruction) {
-		
     	curQuestion = qStack.pop();
     	updateQuestionPanel(curQuestion.question, curQuestion.shuffledAnswers);
     	if (!instruction.equals("Pass"))
@@ -282,7 +281,12 @@ public class TriviaGUI {
 		        		scoreLabel.setText(String.valueOf(curScores));
 		        	}
 		        	lastAnswer = "";
-		        	updateRandomQuestion("Pass");
+		        	if (qStack.isEmpty()) {
+						GUIUtils.showInfoDialog(shell, "GAME OVER", "Your final score is " + curScores + " after " + questionsAnswered + " questions.");
+						isAnswersAvaliable = false;
+					}
+		        	else
+		        		updateRandomQuestion("Pass");
 		        }
 		      }
 		});
