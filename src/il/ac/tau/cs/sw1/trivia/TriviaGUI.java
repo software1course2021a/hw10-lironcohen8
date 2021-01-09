@@ -134,10 +134,10 @@ public class TriviaGUI {
 						br.close();
 					}
 		        	catch (FileNotFoundException e1) { // won't happen
-						return;
+						GUIUtils.showErrorDialog(shell, "Trivia file format error: Trivia file row must containing a question and four answers, seperated by tabs.");
 					}
 		        	catch (IOException e1) { // won't happen
-						return;
+		        		GUIUtils.showErrorDialog(shell, "Trivia file format error: Trivia file row must containing a question and four answers, seperated by tabs.");
 					}
 		        	lastAnswer = "";
 		        	questionsAnswered = 0;
