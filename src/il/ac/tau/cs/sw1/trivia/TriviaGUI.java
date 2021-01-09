@@ -240,10 +240,12 @@ public class TriviaGUI {
 							if (b.getText().equals(rightAns)) {
 								curScores += 3;
 								wrongAnswers = 0;
+								lastAnswer = "Correct! ";
 							}
 							else {
 								curScores -= 2;
 								wrongAnswers += 1;
+								lastAnswer = "Wrong... ";
 							}
 							
 							scoreLabel.setText(String.valueOf(curScores));
@@ -279,6 +281,7 @@ public class TriviaGUI {
 		        		curScores -= 1;
 		        		scoreLabel.setText(String.valueOf(curScores));
 		        	}
+		        	lastAnswer = "";
 		        	updateRandomQuestion("Pass");
 		        }
 		      }
