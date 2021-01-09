@@ -247,11 +247,7 @@ public class TriviaGUI {
 							}
 							
 							scoreLabel.setText(String.valueOf(curScores));
-							if (qStack.isEmpty()) {
-								GUIUtils.showInfoDialog(shell, "YOU WON", "Your final score is " + curScores + " after " + questionsAnswered + " questions.");
-								isAnswersAvaliable = false;
-							}
-							else if (wrongAnswers == MAX_ERRORS) {
+							if (qStack.isEmpty() || wrongAnswers == MAX_ERRORS) {
 								GUIUtils.showInfoDialog(shell, "GAME OVER", "Your final score is " + curScores + " after " + questionsAnswered + " questions.");
 								isAnswersAvaliable = false;
 							}
