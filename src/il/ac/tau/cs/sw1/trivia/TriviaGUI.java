@@ -13,8 +13,6 @@ import java.util.Random;
 import java.util.Stack;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.Point;
@@ -40,7 +38,6 @@ public class TriviaGUI {
 	private Label startupMessageLabel;
 	private Font boldFont;
 	private String lastAnswer;
-	private int questionsAsked;
 	private int questionsAnswered;
 	private Stack<Question> qStack = new Stack<Question>();
 	private int wrongAnswers;
@@ -143,7 +140,6 @@ public class TriviaGUI {
 						return;
 					}
 		        	lastAnswer = "";
-		        	questionsAsked = 0;
 		        	questionsAnswered = 0;
 		        	wrongAnswers = 0;
 		        	curScores = 0;
@@ -162,7 +158,6 @@ public class TriviaGUI {
 		
     	curQuestion = qStack.pop();
     	updateQuestionPanel(curQuestion.question, curQuestion.shuffledAnswers);
-    	questionsAsked++;
     	if (!instruction.equals("Pass"))
     		questionsAnswered++;
 	}
@@ -205,7 +200,7 @@ public class TriviaGUI {
 	 */
 	private void updateQuestionPanel(String question, List<String> answers) {
 		// Save current list of answers.
-		List<String> currentAnswers = answers;
+		//List<String> currentAnswers = answers;
 		
 		// clear the question panel
 		Control[] children = questionPanel.getChildren();
