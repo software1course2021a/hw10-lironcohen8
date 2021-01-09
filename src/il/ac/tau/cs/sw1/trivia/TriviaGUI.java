@@ -10,6 +10,7 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
+import java.util.Stack;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -41,14 +42,13 @@ public class TriviaGUI {
 	private String lastAnswer;
 	private int questionsAsked;
 	private int questionsAnswered;
-	private List<Question> qArr = new ArrayList<Question>();
+	private Stack<Question> qStack = new Stack<Question>();
 	private int wrongAnswers;
 	private Question curQuestion;
-	private int curScores = 0;
-	private boolean isAnswersAvaliable = true;
-	private boolean isPassAvaliable = true;
-	
-	private boolean isFiftyFiftyAvaliable = true;
+	private int curScores;
+	private boolean isAnswersAvaliable;
+	private boolean passUsedFirst;
+	private boolean fiftyFiftyUsedFirst;
 	
 	// Currently visible UI elements.
 	Label instructionLabel;
@@ -130,9 +130,10 @@ public class TriviaGUI {
 						String line = br.readLine();
 						while (line != null) {
 							String[] splittedLine = line.split("\t");
-							qArr.add(new Question(splittedLine));
+							qStack.add(new Question(splittedLine));
 							line = br.readLine();
 						}
+						Collections.shuffle(qStack);
 						br.close();
 					}
 		        	catch (FileNotFoundException e1) { // won't happen
@@ -148,8 +149,8 @@ public class TriviaGUI {
 		        	curScores = 0;
 		        	scoreLabel.setText("0");
 		        	isAnswersAvaliable = true;
-		        	isPassAvaliable = true;
-		        	isFiftyFiftyAvaliable = true;
+		        	passUsedFirst = false;
+		        	fiftyFiftyUsedFirst = false;
 		        	updateRandomQuestion("Play");		        	
 		        }
 		      }
@@ -158,13 +159,8 @@ public class TriviaGUI {
 	}
 	
 	private void updateRandomQuestion(String instruction) {
-		Random rand = new Random();
-    	int qNum = rand.nextInt(qArr.size());
-    	while (qArr.get(qNum).wasAsked) {
-    		qNum = rand.nextInt(qNum);
-    	}
-    	curQuestion = qArr.get(qNum);
-    	curQuestion.wasAsked = true;
+		
+    	curQuestion = qStack.pop();
     	updateQuestionPanel(curQuestion.question, curQuestion.shuffledAnswers);
     	questionsAsked++;
     	if (!instruction.equals("Pass"))
@@ -241,11 +237,10 @@ public class TriviaGUI {
 		}
 		
 		// answers listener
-		if (isAnswersAvaliable) { //###############################################
 			for (Button b : answerButtons) {
 				b.addListener(SWT.Selection, new Listener() {
 				   	public void handleEvent(Event e) {
-				        if (e.type == SWT.Selection) {
+				        if (e.type == SWT.Selection && isAnswersAvaliable) {
 							String rightAns = curQuestion.answers.get(0);
 							if (b.getText().equals(rightAns)) {
 								curScores += 3;
@@ -257,7 +252,7 @@ public class TriviaGUI {
 							}
 							
 							scoreLabel.setText(String.valueOf(curScores));
-							if (questionsAsked == qArr.size()) {
+							if (qStack.isEmpty()) {
 								GUIUtils.showInfoDialog(shell, "YOU WON", "Your final score is " + curScores + " after " + questionsAnswered + " questions.");
 								isAnswersAvaliable = false;
 							}
@@ -271,7 +266,7 @@ public class TriviaGUI {
 					   	}
 				});
 			}
-		}
+		
 
 		// create the "Pass" button to skip a question
 		passButton = new Button(questionPanel, SWT.PUSH);
@@ -284,7 +279,13 @@ public class TriviaGUI {
 		// Pass Listener
 		passButton.addListener(SWT.Selection, new Listener() {
 		      public void handleEvent(Event e) {
-		        if (e.type == SWT.Selection) {
+		        if (e.type == SWT.Selection && curScores > 0) {
+		        	if (!passUsedFirst)
+		        		passUsedFirst = true;
+		        	else {
+		        		curScores -= 1;
+		        		scoreLabel.setText(String.valueOf(curScores));
+		        	}
 		        	updateRandomQuestion("Pass");
 		        }
 		      }
@@ -299,6 +300,21 @@ public class TriviaGUI {
 		data.horizontalSpan = 1;
 		fiftyFiftyButton.setLayoutData(data);
 
+		// 50-50 Listener
+		fiftyFiftyButton.addListener(SWT.Selection, new Listener() {
+		      public void handleEvent(Event e) {
+		        if (e.type == SWT.Selection && curScores > 0) {
+		        	if (!fiftyFiftyUsedFirst)
+		        		fiftyFiftyUsedFirst = true;
+		        	else {
+		        		curScores -= 1;
+		        		scoreLabel.setText(String.valueOf(curScores));
+		        	}
+		        	updateRandomQuestion("Pass");
+		        }
+		      }
+		});
+		
 		// two operations to make the new widgets display properly
 		questionPanel.pack();
 		questionPanel.getParent().layout();
@@ -319,7 +335,6 @@ public class TriviaGUI {
 	}
 	
 	private class Question {
-		private boolean wasAsked;
 		private String question;
 		private List<String> answers = new ArrayList<String>();
 		private List<String> shuffledAnswers = new ArrayList<String>();
