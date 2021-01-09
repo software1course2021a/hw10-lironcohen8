@@ -301,6 +301,7 @@ public class TriviaGUI {
 		fiftyFiftyButton.setLayoutData(data);
 
 		// 50-50 Listener
+		Random rand = new Random();
 		fiftyFiftyButton.addListener(SWT.Selection, new Listener() {
 		      public void handleEvent(Event e) {
 		        if (e.type == SWT.Selection && curScores > 0) {
@@ -310,7 +311,13 @@ public class TriviaGUI {
 		        		curScores -= 1;
 		        		scoreLabel.setText(String.valueOf(curScores));
 		        	}
-		        	updateRandomQuestion("Pass");
+		        	int numAnswerToKeep = rand.nextInt(3) + 1; // 1/2/3
+		        	String rightAns = curQuestion.answers.get(0);
+		        	String ansToKeep = curQuestion.answers.get(numAnswerToKeep);
+		        	for (Button b : answerButtons) {
+		        		if (!b.getText().equals(rightAns) && !b.getText().equals(ansToKeep))
+		        			b.setEnabled(false);
+		        	}
 		        }
 		      }
 		});
