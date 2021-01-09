@@ -320,6 +320,7 @@ public class TriviaGUI {
 		        		if (!b.getText().equals(rightAns) && !b.getText().equals(ansToKeep))
 		        			b.setEnabled(false);
 		        	}
+		        	fiftyFiftyButton.setEnabled(false);
 		        }
 		      }
 		});
